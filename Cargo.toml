@@ -1,0 +1,18 @@
+[package]
+name = "tsa"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+base64 = "0.22.1"
+sha2 = "0.10.8"
+num-bigint = "0.4.6"
+openssl = "0.10.71"
+time = "0.3.37"
+yasna = { version = "0.5.2", features = ["time"] }
+axum = "0.8.1"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hyper = { version = "1.6.0", features = ["server", "http1"] }
+features = "0.10.0"

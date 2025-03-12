@@ -1,0 +1,11 @@
+version: "4"
+
+services:
+  rust-api:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    stdin_open: true  # Keeps the container running
+    tty: true         # Allows interactive terminal

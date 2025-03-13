@@ -6,6 +6,7 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use openssl::x509::X509;
 use num_bigint::BigInt;
+use bitvec::prelude::*;
 
 /// OID for messageDigest: 1.2.840.113549.1.9.4
 const DATA_OID: &[u64] = &[1, 2, 840, 113549, 1, 7, 1];
@@ -52,7 +53,7 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
             writer.next().write_sequence(|writer| {
                 writer.next().write_u8(0);
                 writer.next().write_sequence(|writer| {
-                    writer.next().write_utf8string("TimeStamp by Rust");
+                    writer.next().write_utf8string("TimeStamp by DKPKI");
                 });
             });
 
@@ -131,7 +132,9 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
                                 });
 
                                 // Signature
-                                writer.next().write_bytes(&signature_der_data); // Fake signature
+                                let signature_data = BitVec::<u8, Msb0>::from_slice(&signature_der_data);
+                                writer.next().write_bitvec_bytes(signature_data.as_raw_slice(), signature_data.len());
+                                // writer.next().write_bytes(&signature_der_data); // Fake signature
 
                             });
                         });

@@ -21,5 +21,5 @@ RUN cargo build --release || echo "Build failed, continuing..."
 # Expose the API port
 EXPOSE 3000
 
-# # Start a shell process to keep the container running (allows hot-reloading)
-# CMD ["bash", "-c", "cargo build --release && ./target/release/tsa"]
+# Set the default command to run the Rust binary
+CMD ["./target/release/tsa"]

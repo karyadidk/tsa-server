@@ -11,20 +11,30 @@ use sha2::{Sha256, Digest};
 
 use axum::{routing::post, Router, body::{Body, to_bytes}, http::header, extract::Request, response::{IntoResponse, Response}};
 use tokio::net::TcpListener;
-use std::net::SocketAddr;
+use std::{fs, net::SocketAddr};
 
 
 fn generate(tsq: &str) -> String {
 
-    let user_cert_path = "/app/certificates/self_signed_ca_certificate.pem";
+    let user_cert_path = "/app/certificates/tsa_cert.pem";
     // let digest_data = "9AEnw0mQNvMb6sbindTFCllVxfOrPc8UTsRPMerjX/o=";
     // let tsq = "MDkCAQEwMTANBglghkgBZQMEAgEFAAQgipHEvCVUMdNp2X+lZnIn8pJMxoltdPUlLwD7Kw80y0UBAf8=";
-    let private_key_path = "/app/certificates/ca_private_key.pem";
+    let private_key_path = "/app/key/tsa.key";
     
-    let list_certificate: Vec<String> = vec![
-        String::from("/app/certificates/self_signed_ca_certificate.pem"),
-        // String::from("/Users/pusopskamsinas/Documents/Pribadi/Cpp/NodeLib/certificates/self_signed_ca_certificate.pem"),
-    ];
+    // let list_certificate: Vec<String> = vec![
+    //     String::from("/app/certificates/self_signed_ca_certificate.pem"),
+    //     // String::from("/Users/pusopskamsinas/Documents/Pribadi/Cpp/NodeLib/certificates/self_signed_ca_certificate.pem"),
+    // ];
+
+    let folder_path = "/app/certificates"; // Change this to your folder path
+    let list_certificate: Vec<String> = fs::read_dir(folder_path)
+        .expect("Failed to read directory")
+        .filter_map(|entry| {
+            entry.ok().and_then(|e| {
+                e.path().to_str().map(|s| s.to_string())
+            })
+        })
+        .collect();
 
     let der_tst = process_tsq::process_tsq(tsq);
     // let encoded_tst_base64 = STANDARD.encode(&der_tst);

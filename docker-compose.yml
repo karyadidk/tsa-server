@@ -4,7 +4,7 @@ services:
   tsa-api:
     build: .
     ports:
-      - "3000:3000"
+      - "2580:2580"
     volumes:
       - .:/app
     stdin_open: true  # Keeps the container running

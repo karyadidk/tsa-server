@@ -15,11 +15,11 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 
-# Build the Rust project in release mode
-RUN cargo build --release || echo "Build failed, continuing..."
+# # Build the Rust project in release mode
+# RUN cargo build --release || echo "Build failed, continuing..."
 
 # Expose the API port
-EXPOSE 3000
+EXPOSE 2580
 
 # Set the default command to run the Rust binary
-CMD ["./target/release/tsa"]
+CMD ["sh", "-c", "cargo build --release && ./target/release/tsa"]

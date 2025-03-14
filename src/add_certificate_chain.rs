@@ -10,7 +10,6 @@ pub fn add_certificate_chain(list_certificate: Vec<String>) -> String {
     
             // Print the received strings
             for (_i, s) in list_certificate.iter().enumerate() {
-                // println!("String {}: {}", i, s);
         
                 // Read the certificate
                 let cert_data = fs::read(s).expect("Failed to read certificate file");

@@ -33,7 +33,6 @@ pub fn process_tsq(tsq: &str) -> Vec<u8> {
 
                 // Read Digest Data (OCTET STRING)
                 digest_data = reader.next().read_bytes().expect("Failed to read digest data");
-                // digest_data = STANDARD.encode(&octet_string); // Convert to Base64
 
                 Ok(())
             })?;

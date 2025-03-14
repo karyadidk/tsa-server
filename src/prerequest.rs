@@ -21,8 +21,6 @@ const OID_COMMON_NAME: &[u64] = &[2, 5, 4, 3];
 
 pub fn encode_asn1(cert_path: &str, digest_base64: &str) -> Vec<u8> {
     let digest_value = STANDARD.decode(digest_base64).expect("Failed to decode Base64");
-    // let ocsp_value = STANDARD.decode(ocsp_response).expect("Failed to decode Base64");
-    // let crl_value = STANDARD.decode(crl_response).expect("Failed to decode Base64");
 
     // Read the certificate
     let cert_data = fs::read(cert_path).expect("Failed to read certificate file");
@@ -117,7 +115,5 @@ pub fn encode_asn1(cert_path: &str, digest_base64: &str) -> Vec<u8> {
         });
     });
 
-    // Convert DER to Base64 (standard base64 encoding)
     der_encoded
-    // STANDARD.encode(&der_encoded)
 }

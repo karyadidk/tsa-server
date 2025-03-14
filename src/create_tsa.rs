@@ -6,7 +6,6 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use openssl::x509::X509;
 use num_bigint::BigInt;
-use bitvec::prelude::*;
 
 /// OID for messageDigest: 1.2.840.113549.1.9.4
 const DATA_OID: &[u64] = &[1, 2, 840, 113549, 1, 7, 1];
@@ -30,7 +29,6 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
     // Read the certificate
     let cert_data = fs::read(user_cert_path).expect("Failed to read certificate file");
     let cert = X509::from_pem(&cert_data).expect("Failed to parse certificate");
-    // let user_cert_der = cert.to_der().expect("Failed to convert to DER");
     // Get Serial Number
     let serial_number = get_user_cert_data::get_serial_number(&cert);
     // Get Issuer Details
@@ -51,7 +49,7 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
         writer.write_sequence(|writer| {
             // Begining
             writer.next().write_sequence(|writer| {
-                writer.next().write_u8(0);
+                writer.next().write_i8(0);
                 writer.next().write_sequence(|writer| {
                     writer.next().write_utf8string("TimeStamp by DKPKI");
                 });
@@ -59,21 +57,18 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
 
             // TimeStamp
             writer.next().write_sequence(|writer| {
-                // ContentInfo ::= SEQUENCE {
-                //   contentType OBJECT IDENTIFIER,
-                //   content [0] EXPLICIT ANY OPTIONAL
-                // }
+
                 writer.next().write_oid(&ObjectIdentifier::from_slice(&[1, 2, 840, 113549, 1, 7, 2])); // PKCS#7 SignedData OID
                 
                 writer.next().write_tagged(Tag::context(0), |writer| {
                     writer.write_sequence(|writer| {
-                        writer.next().write_u8(3); // version
+                        writer.next().write_i8(3); // version
 
                         // DigestAlgorithms ::= SET OF AlgorithmIdentifier
                         writer.next().write_set(|writer| {
                             writer.next().write_sequence(|writer| {
                                 writer.next().write_oid(&ObjectIdentifier::from_slice(&[2, 16, 840, 1, 101, 3, 4, 2, 1])); // SHA-256 OID
-                                writer.next().write_null();
+                                // writer.next().write_null();
                             });
                         });
 
@@ -91,7 +86,7 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
                         // SignerInfos ::= SET OF SignerInfo
                         writer.next().write_set(|writer| {
                             writer.next().write_sequence(|writer| {
-                                writer.next().write_u8(1); // version
+                                writer.next().write_i8(1); // version
                                 writer.next().write_sequence(|writer| {
                                     writer.next().write_sequence(|writer| {
                                         writer.next().write_set(|writer| {
@@ -132,9 +127,7 @@ pub fn create_tsa(signed_attributes: &mut String, user_cert_path: String, der_ts
                                 });
 
                                 // Signature
-                                let signature_data = BitVec::<u8, Msb0>::from_slice(&signature_der_data);
-                                writer.next().write_bitvec_bytes(signature_data.as_raw_slice(), signature_data.len());
-                                // writer.next().write_bytes(&signature_der_data); // Fake signature
+                                writer.next().write_bytes(&signature_der_data); // Fake signature
 
                             });
                         });
